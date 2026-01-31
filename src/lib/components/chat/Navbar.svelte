@@ -18,6 +18,7 @@
 
 	import { slide } from 'svelte/transition';
 	import { page } from '$app/stores';
+	import { reportChatToAdmin } from '$lib/apis/utils';
 
 	import ShareChatModal from '../chat/ShareChatModal.svelte';
 	import ModelSelector from '../chat/ModelSelector.svelte';
@@ -43,6 +44,19 @@
 
 	let showShareChatModal = false;
 	let showDownloadChatModal = false;
+
+	const reportChat = async () => {
+		try {
+			if (!$chatId) {
+				toast.error($i18n.t('Chat id not available'));
+				return;
+			}
+			await reportChatToAdmin(localStorage.token, $chatId);
+			toast.success($i18n.t('Report submitted'));
+		} catch (error) {
+			toast.error(`${error}`);
+		}
+	};
 </script>
 
 <ShareChatModal bind:show={showShareChatModal} chatId={$chatId} />
@@ -85,6 +99,16 @@
 				</div>
 
 				<div class="self-start flex flex-none items-center text-gray-600 dark:text-gray-400">
+					{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
+						<button
+							class="hidden md:flex items-center gap-1 px-2.5 py-1.5 mr-1.5 text-xs font-medium rounded-xl border border-gray-200 dark:border-gray-800 text-gray-600 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-850 transition"
+							aria-label="{$i18n.t('Report chat to admin')}"
+							type="button"
+							on:click={reportChat}
+						>
+							{$i18n.t('Report chat to admin')}
+						</button>
+					{/if}
 					<!-- <div class="md:hidden flex self-center w-[1px] h-5 mx-2 bg-gray-300 dark:bg-stone-700" /> -->
 					{#if shareEnabled && chat && (chat.id || $temporaryChatEnabled)}
 						<Menu

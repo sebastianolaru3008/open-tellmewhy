@@ -1,6 +1,8 @@
+import asyncio
 import black
 import logging
 import markdown
+import os
 
 from open_webui.models.chats import ChatTitleMessagesForm
 from open_webui.config import DATA_DIR, ENABLE_ADMIN_EXPORT
@@ -14,6 +16,7 @@ from open_webui.utils.misc import get_gravatar_url
 from open_webui.utils.pdf_generator import PDFGenerator
 from open_webui.utils.auth import get_admin_user, get_verified_user
 from open_webui.utils.code_interpreter import execute_code_jupyter
+from open_webui.utils.report_bot import visit_as_admin
 from open_webui.env import SRC_LOG_LEVELS
 
 
@@ -88,6 +91,10 @@ class ChatForm(BaseModel):
     messages: list[dict]
 
 
+class ReportForm(BaseModel):
+    chat_id: str
+
+
 @router.post("/pdf")
 async def download_chat_as_pdf(
     form_data: ChatTitleMessagesForm, user=Depends(get_verified_user)
@@ -133,3 +140,41 @@ async def download_litellm_config_yaml(user=Depends(get_admin_user)):
         media_type="application/octet-stream",
         filename="config.yaml",
     )
+
+
+@router.post("/report")
+async def report_url(request: Request, form_data: ReportForm, user=Depends(get_verified_user)):
+    admin_email = os.environ.get("REPORT_ADMIN_EMAIL") or request.app.state.config.ADMIN_EMAIL
+    admin_password = os.environ.get("REPORT_ADMIN_PASSWORD", "")
+    base_url = os.environ.get("REPORT_BASE_URL", "http://open-webui:8080")
+
+    log.info(
+        "Report request from user_id=%s chat_id=%s",
+        getattr(user, "id", None),
+        form_data.chat_id,
+    )
+
+    if not admin_email or not admin_password:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Report bot admin credentials are not configured",
+        )
+
+    if not form_data.chat_id.strip():
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="Invalid chat id",
+        )
+
+    asyncio.create_task(
+        visit_as_admin(
+            chat_id=form_data.chat_id,
+            base_url=base_url,
+            admin_email=admin_email,
+            admin_password=admin_password,
+            ws_url=request.app.state.config.PLAYWRIGHT_WS_URL,
+            timeout_ms=request.app.state.config.PLAYWRIGHT_TIMEOUT,
+        )
+    )
+
+    return {"status": "queued"}

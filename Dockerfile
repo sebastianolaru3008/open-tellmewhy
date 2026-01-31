@@ -64,7 +64,9 @@ ENV OPENAI_API_KEY="" \
     WEBUI_SECRET_KEY="" \
     SCARF_NO_ANALYTICS=true \
     DO_NOT_TRACK=true \
-    ANONYMIZED_TELEMETRY=false
+    ANONYMIZED_TELEMETRY=false \
+    REPORT_ADMIN_EMAIL="admin@test.com" \
+    REPORT_ADMIN_PASSWORD="splinter!pores2tears5TRES"
 
 #### Other models #########################################################
 ## whisper TTS model settings ##
@@ -112,6 +114,11 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     apt-get install -y --no-install-recommends gcc python3-dev && \
     # for RAG OCR
     apt-get install -y --no-install-recommends ffmpeg libsm6 libxext6 && \
+    # Playwright runtime deps
+    apt-get install -y --no-install-recommends \
+    libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \
+    libxcomposite1 libxdamage1 libxrandr2 libxss1 libxfixes3 libxkbcommon0 \
+    libgbm1 libasound2 libx11-xcb1 libcups2 libdrm2 libxshmfence1 libgtk-3-0 && \
     # install helper tools
     apt-get install -y --no-install-recommends curl jq && \
     # install ollama
@@ -125,6 +132,11 @@ RUN if [ "$USE_OLLAMA" = "true" ]; then \
     apt-get install -y --no-install-recommends gcc python3-dev && \
     # for RAG OCR
     apt-get install -y --no-install-recommends ffmpeg libsm6 libxext6 && \
+    # Playwright runtime deps
+    apt-get install -y --no-install-recommends \
+    libnss3 libnspr4 libatk1.0-0 libatk-bridge2.0-0 libatspi2.0-0 \
+    libxcomposite1 libxdamage1 libxrandr2 libxss1 libxfixes3 libxkbcommon0 \
+    libgbm1 libasound2 libx11-xcb1 libcups2 libdrm2 libxshmfence1 libgtk-3-0 && \
     # cleanup
     rm -rf /var/lib/apt/lists/*; \
     fi
@@ -148,6 +160,8 @@ RUN pip3 install --no-cache-dir uv && \
     python -c "import os; import tiktoken; tiktoken.get_encoding(os.environ['TIKTOKEN_ENCODING_NAME'])"; \
     fi; \
     chown -R $UID:$GID /app/backend/data/
+
+RUN playwright install chromium
 
 
 

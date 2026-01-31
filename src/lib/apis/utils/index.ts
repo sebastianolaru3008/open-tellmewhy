@@ -144,6 +144,36 @@ export const getHTMLFromMarkdown = async (token: string, md: string) => {
 	return res.html;
 };
 
+export const reportChatToAdmin = async (token: string, chatId: string) => {
+	let error = null;
+
+	const res = await fetch(`${WEBUI_API_BASE_URL}/utils/report`, {
+		method: 'POST',
+		headers: {
+			'Content-Type': 'application/json',
+			Authorization: `Bearer ${token}`
+		},
+		body: JSON.stringify({
+			chat_id: chatId
+		})
+	})
+		.then(async (res) => {
+			if (!res.ok) throw await res.json();
+			return res.json();
+		})
+		.catch((err) => {
+			console.log(err);
+			error = err;
+			return null;
+		});
+
+	if (error) {
+		throw error?.detail ?? error;
+	}
+
+	return res;
+};
+
 export const downloadDatabase = async (token: string) => {
 	let error = null;
 

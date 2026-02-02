@@ -64,9 +64,7 @@ ENV OPENAI_API_KEY="" \
     WEBUI_SECRET_KEY="" \
     SCARF_NO_ANALYTICS=true \
     DO_NOT_TRACK=true \
-    ANONYMIZED_TELEMETRY=false \
-    REPORT_ADMIN_EMAIL="admin@test.com" \
-    REPORT_ADMIN_PASSWORD="splinter!pores2tears5TRES"
+    ANONYMIZED_TELEMETRY=false
 
 #### Other models #########################################################
 ## whisper TTS model settings ##

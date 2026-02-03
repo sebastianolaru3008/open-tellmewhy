@@ -1,5 +1,22 @@
+<script lang="ts">
+	import { WEBUI_NAME } from '$lib/stores';
+</script>
+
 <div class="flex flex-col h-full justify-between space-y-3 text-sm mb-6">
 	<div class=" space-y-3 overflow-y-scroll max-h-[28rem] lg:max-h-full">
+		<div>
+			<div class=" mb-2.5 text-sm font-medium flex space-x-2 items-center">
+				<div>{$WEBUI_NAME}</div>
+			</div>
+			<div class="flex w-full justify-between items-center">
+				<div class="flex flex-col text-xs text-gray-700 dark:text-gray-200">
+					<div class="flex gap-1">Try harder :))</div>
+				</div>
+			</div>
+		</div>
+
+		<hr class=" border-gray-100 dark:border-gray-850" />
+
 		<div class="flex space-x-1">
 			<a href="https://discord.gg/5rJgQTnV4s" target="_blank">
 				<img

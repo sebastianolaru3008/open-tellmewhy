@@ -1,13 +1,10 @@
 <script lang="ts">
 	import { WEBUI_NAME, config, showChangelog } from '$lib/stores';
-	import { onMount, getContext } from 'svelte';
+	import { getContext } from 'svelte';
 
 
 	const i18n = getContext('i18n');
 
-	onMount(() => {
-		// Intentionally no Ollama version display on this page.
-	});
 </script>
 
 <div class="flex flex-col h-full justify-between space-y-3 text-sm mb-6">
